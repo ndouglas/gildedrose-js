@@ -6,6 +6,25 @@ class Item {
   }
 }
 
+const types = {
+  agedBrie: 'Aged Brie',
+  backstagePasses: 'Backstage passes to a TAFKAL80ETC concert',
+  sulfuras: 'Sulfuras, Hand of Ragnaros',
+  conjured: 'Conjured Mana Cake',
+};
+
+const makeFactory = () => {
+  const result = {};
+  result.get = (itemName) => result[itemName] || result.default;
+  return result;
+};
+
+const qualityUpdaters = makeFactory();
+
+const sellInUpdaters = makeFactory();
+
+const expirers = makeFactory();
+
 class Shop {
 
   constructor(items = []) {
@@ -13,38 +32,25 @@ class Shop {
   }
 
   updateQuality() {
-    for (let i = 0; i < this.items.length; i++) {
-      const item = this.items[i];
-      QualityUpdater.for(item).update(item);
-      SellInUpdater.for(item).update(item);
+    this.items.forEach((item) => {
+      qualityUpdaters.get(item.name).update(item);
+      sellInUpdaters.get(item.name).update(item);
       if (item.sellIn < 0) {
-        Expirer.for(item).update(item);
+        expirers.get(item.name).update(item);
       }
-    }
+    });
   }
 
 }
 
 class QualityUpdater {
-  static for(item) {
-    switch (item.name) {
-      case 'Aged Brie':
-        return new AgedBrieQualityUpdater();
-      case 'Backstage passes to a TAFKAL80ETC concert':
-        return new BackstagePassesQualityUpdater();
-      case 'Sulfuras, Hand of Ragnaros':
-        return new SulfurasQualityUpdater();
-      default:
-        return new QualityUpdater();
-    }
-  }
-
   update(item) {
     if (item.quality > 0) {
       item.quality = item.quality - 1;
     }
   }
 }
+qualityUpdaters.default = new QualityUpdater();
 
 class AgedBrieQualityUpdater extends QualityUpdater {
   update(item) {
@@ -53,69 +59,56 @@ class AgedBrieQualityUpdater extends QualityUpdater {
     }
   }
 }
+qualityUpdaters[types.agedBrie] = new AgedBrieQualityUpdater();
 
 class BackstagePassesQualityUpdater extends QualityUpdater {
   update(item) {
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
-    if (item.quality < 50) {
-      if (item.sellIn < 11) {
-        item.quality = item.quality + 1;
-        if (item.sellIn < 6) {
-          item.quality = item.quality + 1;
-        }
+    item.quality = Math.min(item.quality + 1, 50);
+    if (item.sellIn < 11) {
+      item.quality = Math.min(item.quality + 1, 50);
+      if (item.sellIn < 6) {
+        item.quality = Math.min(item.quality + 1, 50);
       }
     }
   }
 }
+qualityUpdaters[types.backstagePasses] = new BackstagePassesQualityUpdater();
 
 class SulfurasQualityUpdater extends QualityUpdater {
   update(item) { }
 }
+qualityUpdaters[types.sulfuras] = new SulfurasQualityUpdater();
+
+class ConjuredQualityUpdater extends QualityUpdater {
+  update(item) {
+    super.update(item);
+    super.update(item);
+  }
+}
+qualityUpdaters[types.conjured] = new ConjuredQualityUpdater();
 
 class SellInUpdater {
-
-  static for(item) {
-    switch (item.name) {
-      case 'Sulfuras, Hand of Ragnaros':
-        return new SulfurasSellInUpdater();
-      default:
-        return new SellInUpdater();
-    }
-  }
-
   update(item) {
     item.sellIn = item.sellIn - 1;
   }
 
 }
+sellInUpdaters.default = new SellInUpdater();
 
 class SulfurasSellInUpdater extends SellInUpdater {
   update(item) { }
 
 }
+sellInUpdaters[types.sulfuras] = new SulfurasSellInUpdater();
 
 class Expirer {
-  static for(item) {
-    switch (item.name) {
-      case 'Aged Brie':
-        return new AgedBrieExpirer();
-      case 'Sulfuras, Hand of Ragnaros':
-        return new SulfurasExpirer();
-      case 'Backstage passes to a TAFKAL80ETC concert':
-        return new BackstagePassesExpirer();
-      default:
-        return new Expirer();
-    }
-  }
-
   update(item) {
     if (item.quality > 0) {
       item.quality = item.quality - 1;
     }
   }
 }
+expirers.default = new Expirer();
 
 class AgedBrieExpirer extends Expirer {
   update(item) {
@@ -124,18 +117,21 @@ class AgedBrieExpirer extends Expirer {
     }
   }
 }
+expirers[types.agedBrie] = new AgedBrieExpirer();
 
 class SulfurasExpirer extends Expirer {
   update(item) { }
 }
+expirers[types.sulfuras] = new SulfurasExpirer();
 
 class BackstagePassesExpirer extends Expirer {
   update(item) {
     item.quality = 0;
   }
 }
+expirers[types.backstagePasses] = new BackstagePassesExpirer();
 
 module.exports = {
   Item,
-  Shop
+  Shop,
 }
