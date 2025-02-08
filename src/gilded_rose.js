@@ -15,59 +15,63 @@ class Shop {
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
-      this.qualityUpdaterFor(item).update(item);
-      this.sellInUpdaterFor(item).update(item);
+      QualityUpdater.for(item).update(item);
+      SellInUpdater.for(item).update(item);
       if (item.sellIn < 0) {
-        this.expirerFor(item).update(item);
+        Expirer.for(item).update(item);
       }
     }
-  }
-
-  qualityUpdaterFor(item) {
-    return QualityUpdater.for(item);
-  }
-
-  sellInUpdaterFor(item) {
-    return SellInUpdater.for(item);
-  }
-
-  expirerFor(item) {
-    return Expirer.for(item);
   }
 
 }
 
 class QualityUpdater {
   static for(item) {
-    return new QualityUpdater();
-  }
-
-  constructor() {
+    switch (item.name) {
+      case 'Aged Brie':
+        return new AgedBrieQualityUpdater();
+      case 'Backstage passes to a TAFKAL80ETC concert':
+        return new BackstagePassesQualityUpdater();
+      case 'Sulfuras, Hand of Ragnaros':
+        return new SulfurasQualityUpdater();
+      default:
+        return new QualityUpdater();
+    }
   }
 
   update(item) {
-    if (item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert') {
-      if (item.quality > 0) {
-        if (item.name != 'Sulfuras, Hand of Ragnaros') {
-          item.quality = item.quality - 1;
-        }
-      }
-    } else {
-      if (item.quality < 50) {
+    if (item.quality > 0) {
+      item.quality = item.quality - 1;
+    }
+  }
+}
+
+class AgedBrieQualityUpdater extends QualityUpdater {
+  update(item) {
+    if (item.quality < 50) {
+      item.quality = item.quality + 1;
+    }
+  }
+}
+
+class BackstagePassesQualityUpdater extends QualityUpdater {
+  update(item) {
+    if (item.quality < 50) {
+      item.quality = item.quality + 1;
+    }
+    if (item.quality < 50) {
+      if (item.sellIn < 11) {
         item.quality = item.quality + 1;
-        if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-          if (item.quality < 50) {
-            if (item.sellIn < 11) {
-              item.quality = item.quality + 1;
-            }
-            if (item.sellIn < 6) {
-              item.quality = item.quality + 1;
-            }
-          }
+        if (item.sellIn < 6) {
+          item.quality = item.quality + 1;
         }
       }
     }
   }
+}
+
+class SulfurasQualityUpdater extends QualityUpdater {
+  update(item) { }
 }
 
 class SellInUpdater {
@@ -127,7 +131,7 @@ class SulfurasExpirer extends Expirer {
 
 class BackstagePassesExpirer extends Expirer {
   update(item) {
-    item.quality = item.quality - item.quality;
+    item.quality = 0;
   }
 }
 
