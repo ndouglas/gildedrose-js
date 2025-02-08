@@ -19,10 +19,10 @@ class Shop {
 
   updateQuality() {
     this.items.forEach((item) => {
-      qualityUpdaters.get(item.name).update(item);
-      sellInUpdaters.get(item.name).update(item);
+      qualityUpdaters.update(item);
+      sellInUpdaters.update(item);
       if (item.sellIn < 0) {
-        expirers.get(item.name).update(item);
+        expirers.update(item);
       }
     });
   }
