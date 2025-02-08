@@ -124,4 +124,5 @@ expirers[types.backstagePasses] = new BackstagePassesExpirer();
 module.exports = {
   Item,
   Shop,
+  types,
 }
