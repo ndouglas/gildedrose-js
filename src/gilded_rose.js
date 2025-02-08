@@ -10,17 +10,23 @@ class Shop {
 
   constructor(items = []) {
     this.items = items;
-    this.qualityUpdater = new QualityUpdater();
-    this.sellInUpdater = new SellInUpdater();
   }
 
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
-      this.qualityUpdater.update(item);
-      this.sellInUpdater.update(item);
-      this.sellInUpdater.didUpdate(item);
+      this.qualityUpdaterFor(item).update(item);
+      this.sellInUpdaterFor(item).update(item);
+      this.sellInUpdaterFor(item).didUpdate(item);
     }
+  }
+
+  qualityUpdaterFor(item) {
+    return new QualityUpdater(item);
+  }
+
+  sellInUpdaterFor(item) {
+    return new SellInUpdater(item);
   }
 
 }
