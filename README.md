@@ -1,5 +1,7 @@
 # Gilded Rose in Javascript with Jest
 
+This was very fun, but I've completed it. See [Emily Bache's repository](https://github.com/emilybache/GildedRose-Refactoring-Kata) if you wanna do it too.
+
 See the [requirements](./GildedRoseRequirements.md) for background on the problem we're working on.
 
 ## Getting started
