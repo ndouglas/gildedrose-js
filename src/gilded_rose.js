@@ -73,13 +73,12 @@ class QualityUpdater {
 class SellInUpdater {
 
   static for(item) {
-    if (item.name == 'Sulfuras, Hand of Ragnaros') {
-      return new SulfurasSellInUpdater();
+    switch (item.name) {
+      case 'Sulfuras, Hand of Ragnaros':
+        return new SulfurasSellInUpdater();
+      default:
+        return new SellInUpdater();
     }
-    return new SellInUpdater();
-  }
-
-  constructor() {
   }
 
   update(item) {
