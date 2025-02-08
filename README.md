@@ -1,5 +1,7 @@
 # Gilded Rose in Javascript with Jest
 
+See the [requirements](./GildedRoseRequirements.md) for background on the problem we're working on.
+
 ## Getting started
 
 Install dependencies
