@@ -45,18 +45,14 @@ class Shop {
 
 class QualityUpdater {
   update(item) {
-    if (item.quality > 0) {
-      item.quality = item.quality - 1;
-    }
+    item.quality = Math.max(item.quality - 1, 0);
   }
 }
 qualityUpdaters.default = new QualityUpdater();
 
 class AgedBrieQualityUpdater extends QualityUpdater {
   update(item) {
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
+    item.quality = Math.min(item.quality + 1, 50);
   }
 }
 qualityUpdaters[types.agedBrie] = new AgedBrieQualityUpdater();
@@ -91,30 +87,24 @@ class SellInUpdater {
   update(item) {
     item.sellIn = item.sellIn - 1;
   }
-
 }
 sellInUpdaters.default = new SellInUpdater();
 
 class SulfurasSellInUpdater extends SellInUpdater {
   update(item) { }
-
 }
 sellInUpdaters[types.sulfuras] = new SulfurasSellInUpdater();
 
 class Expirer {
   update(item) {
-    if (item.quality > 0) {
-      item.quality = item.quality - 1;
-    }
+    item.quality = Math.max(item.quality - 1, 0);
   }
 }
 expirers.default = new Expirer();
 
 class AgedBrieExpirer extends Expirer {
   update(item) {
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
+    item.quality = Math.min(item.quality + 1, 50);
   }
 }
 expirers[types.agedBrie] = new AgedBrieExpirer();
