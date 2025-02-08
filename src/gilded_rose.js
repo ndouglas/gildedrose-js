@@ -95,24 +95,21 @@ class SulfurasSellInUpdater extends SellInUpdater {
 
 class Expirer {
   static for(item) {
-    if (item.name == 'Aged Brie') {
-      return new AgedBrieExpirer();
+    switch (item.name) {
+      case 'Aged Brie':
+        return new AgedBrieExpirer();
+      case 'Sulfuras, Hand of Ragnaros':
+        return new SulfurasExpirer();
+      case 'Backstage passes to a TAFKAL80ETC concert':
+        return new BackstagePassesExpirer();
+      default:
+        return new Expirer();
     }
-    return new Expirer();
-  }
-
-  constructor() {
-
   }
 
   update(item) {
-    if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-      item.quality = item.quality - item.quality;
-    } else if (item.name == 'Sulfuras, Hand of Ragnaros') {
-    } else {
-      if (item.quality > 0) {
-        item.quality = item.quality - 1;
-      }
+    if (item.quality > 0) {
+      item.quality = item.quality - 1;
     }
   }
 }
@@ -122,6 +119,16 @@ class AgedBrieExpirer extends Expirer {
     if (item.quality < 50) {
       item.quality = item.quality + 1;
     }
+  }
+}
+
+class SulfurasExpirer extends Expirer {
+  update(item) { }
+}
+
+class BackstagePassesExpirer extends Expirer {
+  update(item) {
+    item.quality = item.quality - item.quality;
   }
 }
 
